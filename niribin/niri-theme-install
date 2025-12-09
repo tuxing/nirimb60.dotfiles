@@ -1,0 +1,38 @@
+#!/bin/bash
+
+# niri-theme-install: Install a new theme from a git repo
+# Usage: niri-theme-install <git-repo-url>
+
+if [ -z "$1" ]; then
+  echo "Please enter the Git repository URL for the theme:"
+  read -r REPO_URL
+else
+  REPO_URL="$1"
+fi
+
+if [ -z "$REPO_URL" ]; then
+  exit 1
+fi
+
+THEMES_DIR="$HOME/.config/themes"
+
+# Logic Update:
+# 1. basename: gets 'omarchy-ayaka-theme'
+# 2. sed: removes '-theme' from the end AND 'omarchy-' from the start
+THEME_NAME=$(basename "$REPO_URL" .git | sed -E 's/-theme$//; s/^omarchy-//')
+
+THEME_PATH="$THEMES_DIR/$THEME_NAME"
+
+# Remove existing theme if present
+if [ -d "$THEME_PATH" ]; then
+  rm -rf "$THEME_PATH"
+fi
+
+# Clone the repo directly to ~/.config/themes/ayaka (example)
+if ! git clone "$REPO_URL" "$THEME_PATH"; then
+  echo "Error: Failed to clone theme repo."
+  exit 1
+fi
+
+# Apply the new theme with niri-theme-set
+niri-theme-set "$THEME_NAME"

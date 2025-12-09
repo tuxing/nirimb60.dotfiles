@@ -1,0 +1,12 @@
+#!/bin/bash
+TERM_CMD=""
+if command -v alacritty >/dev/null; then TERM_CMD="alacritty --title About -e";
+elif command -v kitty >/dev/null; then TERM_CMD="kitty --title About -e";
+elif command -v ghostty >/dev/null; then TERM_CMD="ghostty -e";
+fi
+
+if [[ -n "$TERM_CMD" ]]; then
+    $TERM_CMD bash -c 'fastfetch; read -n 1 -s'
+else
+    notify-send "No suitable terminal found for About"
+fi

@@ -1,0 +1,24 @@
+#!/bin/bash
+
+LOG_FILE="/tmp/lock_debug.log"
+KILL_SCRIPT="/home/zen/niribin/niri-kill-ss"
+
+echo "--- Lock requested at $(date) ---" >> "$LOG_FILE"
+
+# 1. Kill Screensaver (Using the helper)
+if [[ -x "$KILL_SCRIPT" ]]; then
+    $KILL_SCRIPT >> "$LOG_FILE" 2>&1
+else
+    # Fallback manual kill
+    pkill -f niri-cmd-screensaver
+    pkill -f "alacritty.*screensaver"
+    pkill -x tte
+fi
+
+sleep 0.5
+
+# 2. Start Hyprlock
+# Using nohup as requested to avoid blanking/hanging issues.
+# Pgrep check removed to avoid false positives.
+echo "Starting new Hyprlock instance (nohup)..." >> "$LOG_FILE"
+nohup hyprlock >> "$LOG_FILE" 2>&1 &

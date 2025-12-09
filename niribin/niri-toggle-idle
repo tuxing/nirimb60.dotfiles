@@ -1,0 +1,10 @@
+#!/bin/bash
+
+if pgrep -x "swayidle" > /dev/null || pgrep -f "niri-swayidle" > /dev/null; then
+    pkill -f niri-swayidle
+    pkill -x swayidle
+    notify-send "Idle Management Disabled" "Presentation mode active (swayidle killed)."
+else
+    $HOME/niribin/niri-swayidle &
+    notify-send "Idle Management Enabled" "System will sleep when idle."
+fi

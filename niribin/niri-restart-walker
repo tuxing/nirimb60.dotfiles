@@ -1,0 +1,8 @@
+#!/bin/bash
+pkill walker
+if [[ $EUID -eq 0 ]]; then
+  SCRIPT_OWNER=$(stat -c "%U" "$0")
+  sudo -u "$SCRIPT_OWNER" nohup walker --gapplication-service >/dev/null 2>&1 &
+else
+  nohup walker --gapplication-service >/dev/null 2>&1 &
+fi

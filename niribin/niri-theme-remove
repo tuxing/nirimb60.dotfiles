@@ -1,0 +1,47 @@
+#!/bin/bash
+
+# niri-theme-remove: Remove a theme by name
+# Usage: niri-theme-remove <theme-name>
+
+if [ -z "$1" ]; then
+  mapfile -t extra_themes < <(find ~/.config/themes -mindepth 1 -maxdepth 1 -type d ! -xtype l -printf '%f\n')
+
+  if [[ ${#extra_themes[@]} -gt 0 ]]; then
+    echo "Select a theme to remove:"
+    select THEME_NAME in "${extra_themes[@]}"; do
+      if [[ -n "$THEME_NAME" ]]; then
+        break
+      else
+        echo "Invalid selection."
+      fi
+    done
+  else
+    echo "No extra themes installed."
+    exit 1
+  fi
+else
+  THEME_NAME="$1"
+fi
+
+THEMES_DIR="$HOME/.config/themes"
+CURRENT_THEME_LINK="$HOME/.config/current-theme"
+THEME_PATH="$THEMES_DIR/$THEME_NAME"
+
+# Ensure a theme was set
+if [ -z "$THEME_NAME" ]; then
+  exit 1
+fi
+
+# Check if theme exists before attempting removal
+if [ ! -d "$THEME_PATH" ]; then
+  echo "Error: Theme '$THEME_NAME' not found."
+  exit 1
+fi
+
+# Move to the next theme if the current theme is the one being removed
+if [ "$(readlink -f "$CURRENT_THEME_LINK")" = "$(readlink -f "$THEME_PATH")" ]; then
+  niri-theme-next
+fi
+
+# Now remove the theme directory for THEME_NAME
+rm -rf "$THEME_PATH"

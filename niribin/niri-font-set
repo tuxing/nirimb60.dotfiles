@@ -1,0 +1,53 @@
+#!/bin/bash
+
+font_name="$1"
+
+if [[ -n "$font_name" && "$font_name" != "CNCLD" ]]; then
+  if fc-list | grep -iq "$font_name"; then
+    if [[ -f ~/.config/alacritty/alacritty.toml ]]; then
+      sed -i "s/family = \".*\"/family = \"$font_name\"/g" ~/.config/alacritty/alacritty.toml
+    fi
+
+    if [[ -f ~/.config/kitty/kitty.conf ]]; then
+      sed -i "s/^font_family .*/font_family $font_name/g" ~/.config/kitty/kitty.conf
+      pkill -USR1 kitty
+    fi
+
+    if [[ -f ~/.config/ghostty/config ]]; then
+      sed -i "s/font-family = \".*\"/font-family = \"$font_name\"/g" ~/.config/ghostty/config
+      pkill -SIGUSR2 ghostty
+    fi
+
+    # Niri doesn't have a global font config like Hyprland's, usually done per app.
+    # But we update waybar and swayosd.
+
+    sed -i "s/font-family: .*/font-family: '$font_name';/g" ~/.config/waybar/style.css
+    sed -i "s/font-family: .*/font-family: '$font_name';/g" ~/.config/swayosd/style.css
+    
+    # Fontconfig update
+    xmlstarlet ed -L \
+      -u '//match[@target="pattern"][test/string="monospace"]/edit[@name="family"]/string'
+      -v "$font_name" \
+      ~/.config/fontconfig/fonts.conf
+
+    # Restart Waybar
+    pkill -SIGUSR2 waybar
+
+    # Restart SwayOSD
+    if command -v niri-restart-swayosd &> /dev/null; then
+        niri-restart-swayosd
+    else
+        pkill -HUP swayosd-server
+    fi
+
+    if pgrep -x ghostty; then
+      notify-send "    You must restart Ghostty to see font change"
+    fi
+
+  else
+    echo "Font '$font_name' not found."
+    exit 1
+  fi
+else
+  echo "Usage: niri-font-set <font-name>"
+fi

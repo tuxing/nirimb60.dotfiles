@@ -1,0 +1,2 @@
+#!/bin/bash
+fc-list :spacing=100 -f "%{family}\n" | cut -d, -f1 | grep -v -i -E 'emoji|signwriting|omarchy' | sort -u

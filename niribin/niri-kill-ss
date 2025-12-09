@@ -1,0 +1,19 @@
+#!/bin/bash
+
+PID_FILE="/tmp/niri-ss.pid"
+
+# 1. Surgical Kill (Using PID file)
+if [[ -f "$PID_FILE" ]]; then
+    PID=$(cat "$PID_FILE")
+    # Check if this PID is actually running to avoid errors
+    if kill -0 "$PID" 2>/dev/null; then
+        kill "$PID"
+    fi
+    rm -f "$PID_FILE"
+fi
+
+# 2. Cleanup (Fallbacks)
+# Only kill Alacritty windows that are explicitly screensavers.
+# We REMOVED 'pkill -f niri-cmd-screensaver' to protect your Ghostty windows.
+pkill -f "alacritty.*class.*screensaver"
+pkill -x tte

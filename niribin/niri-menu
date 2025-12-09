@@ -1,0 +1,183 @@
+#!/bin/bash
+
+# Ensure niribin is in path
+SCRIPT_DIR=$(dirname "$(readlink -f "$0")")
+export PATH="$SCRIPT_DIR:$PATH"
+
+# Helper for walker dmenu
+menu_cmd() {
+    walker --dmenu --width 320 --height 720 -p "$1" 2>/dev/null
+}
+
+# Helper for floating terminal
+run_in_term() {
+    local cmd="$1"
+
+    # Desired dimensions in pixels
+    local width=1200
+    local height=720
+
+    if command -v alacritty >/dev/null; then
+        # Approx conversion: 9px per col, 18px per line
+        local cols=$((width / 9))
+        local lines=$((height / 18))
+        alacritty --class com.arch.niri -o window.dimensions.columns=$cols -o window.dimensions.lines=$lines -o window.padding.x=20 -o window.padding.y=20 -e bash -c "$cmd"
+    elif command -v kitty >/dev/null; then
+        kitty --class com.arch.niri -o remember_window_size=no -o initial_window_width=$width -o initial_window_height=$height -o window_padding_width=20 -e bash -c "$cmd"
+    elif command -v ghostty >/dev/null; then
+        ghostty --class com.arch.niri -e bash -c "$cmd"
+    fi
+}
+
+# Actions Labels
+lock="  Lock"
+screensaver="󱄄  Screensaver"
+suspend="󰤄  Suspend"
+idle="󰒲  Toggle Idle"
+reboot="󰜉  Restart"
+shutdown="󰐥  Shutdown"
+change_theme="󰸌  Change Theme"
+theme_opts="󰸌  Theme Options"
+bg="  Background"
+screenshot="  Screenshot"
+color="󰃉  Color Picker"
+power="  Power Profiles"
+audio="  Audio"
+wifi="  Wifi"
+bt="󰂯  Bluetooth"
+update="󰚰  Update Arch"
+about="  About"
+screenrecord="󰑊  Screenrecord" # Relabeled
+
+change_font="󰇹  Change Font"
+
+# Build list
+list="$change_theme\n$change_font\n$theme_opts\n$bg\n$lock\n$reboot\n$idle\n$shutdown\n$suspend"
+
+# Check optional power tool before screensaver
+if command -v powerprofilesctl >/dev/null; then list="$list\n$power"; fi
+
+# Moved screenrecord to be after screensaver
+list="$list\n$screensaver\n$screenrecord\n$screenshot\n$color"
+
+# Check other optional tools
+if command -v pavucontrol >/dev/null; then list="$list\n$audio"; fi
+if command -v nm-connection-editor >/dev/null; then list="$list\n$wifi"; fi
+if command -v blueman-manager >/dev/null; then list="$list\n$bt"; fi
+
+list="$list\n$update\n$about"
+
+selected=$(echo -e "$list" | menu_cmd "System Menu")
+
+case "$selected" in
+    *"$lock"*) niri-lock-screen ;; 
+    *"$screensaver"*) niri-launch-screensaver force ;; 
+    *"$suspend"*) systemctl suspend ;; 
+    *"$idle"*) niri-toggle-idle ;; 
+    *"$reboot"*) niri-cmd-reboot ;; 
+    *"$shutdown"*) niri-cmd-shutdown ;; 
+    *"$change_theme"*) 
+        if [[ -x "$SCRIPT_DIR/niri-theme-list" ]]; then
+            t=$(niri-theme-list | menu_cmd "Select Theme")
+            [[ -n "$t" ]] && niri-theme-set "$t"
+        fi
+        ;; 
+    *"$theme_opts"*) 
+        t_install="Install Theme"
+        t_remove="Remove Theme"
+        t_update="Update Themes"
+        t_list="List Themes"
+        t_next="Next Theme"
+
+        t_sel=$(echo -e "$t_install\n$t_remove\n$t_update\n$t_list\n$t_next" | menu_cmd "Theme Options")
+
+        case "$t_sel" in
+            "$t_install") run_in_term "niri-theme-install; echo Done. Press any key...; read -n 1" ;; 
+            "$t_remove") run_in_term "niri-theme-remove; echo Done. Press any key...; read -n 1" ;; 
+            "$t_update") run_in_term "niri-theme-update; echo Done. Press any key...; read -n 1" ;; 
+            "$t_list") run_in_term "niri-theme-list; echo Press any key...; read -n 1" ;; 
+            "$t_next") niri-theme-next ;; 
+        esac
+        ;; 
+    *"$bg"*) niri-theme-bg-next ;; 
+    *"$screenshot"*) 
+        mode=$(echo -e "Area\nFull" | menu_cmd "Screenshot Mode")
+        case "$mode" in
+            "Area") niri-cmd-screenshot area ;; 
+            "Full") niri-cmd-screenshot full ;; 
+        esac
+        ;; 
+    *"$color"*) hyprpicker -a ;; 
+    *"$power"*) 
+        current=$(powerprofilesctl get)
+        opts=""
+        for p in "performance" "balanced" "powersave"; do
+            sys_p="$p"
+            [[ "$p" == "powersave" ]] && sys_p="power-saver"
+
+            if [[ "$current" == "$sys_p" ]]; then
+                opts="${opts}* $p\n"
+            else
+                opts="${opts}$p\n"
+            fi
+        done
+        
+        selected_power_profile=$(echo -e "$opts" | menu_cmd "Power Profile")
+        if [[ -n "$selected_power_profile" ]]; then
+            # Remove leading "* " if present
+            selected_power_profile=$(echo "$selected_power_profile" | sed 's/^\* //')
+            # Convert powersave back to power-saver for systemctl
+            [[ "$selected_power_profile" == "powersave" ]] && selected_power_profile="power-saver"
+            powerprofilesctl set "$selected_power_profile"
+        fi
+        ;; 
+    *"$audio"*) pavucontrol ;; 
+    *"$wifi"*) nm-connection-editor ;; 
+    *"$bt"*) blueman-manager ;; 
+    *"$update"*) run_in_term "niri-update; echo Done. Press any key...; read -n 1" ;; 
+    *"$about"*) niri-launch-about ;; 
+    *"$screenrecord"*) 
+        rec_desktop_audio="With Desktop Audio"
+        rec_mic_audio="With Microphone Audio"
+        rec_webcam="With Webcam Overlay"
+        rec_stop="Stop Recording"
+
+        rec_opts=""
+        # Check if recording is active to show "Stop Recording" option
+        if pgrep -f "^gpu-screen-recorder" >/dev/null || pgrep -f "WebcamOverlay" >/dev/null; then
+            rec_opts="$rec_stop\n"
+        fi
+        rec_opts="${rec_opts}${rec_desktop_audio}\n${rec_mic_audio}\n${rec_webcam}"
+
+        rec_selection=$(echo -e "$rec_opts" | menu_cmd "Screen Record Options")
+
+        case "$rec_selection" in
+            *"$rec_stop"*) niri-cmd-screenrecord --stop-recording ;; 
+            *"$rec_desktop_audio"*) niri-cmd-screenrecord --with-desktop-audio ;; 
+            *"$rec_mic_audio"*) niri-cmd-screenrecord --with-microphone-audio ;; 
+            *"$webcam"*) niri-cmd-screenrecord --with-webcam ;; 
+        esac
+        ;; 
+    *"$change_font"*) 
+        if [[ -x "$SCRIPT_DIR/niri-font-list" ]]; then
+            current_font=$(niri-font-current)
+            
+            # Get list, mark current font
+            font_list=$(niri-font-list | while read -r font; do
+                if [[ "$font" == "$current_font" ]]; then
+                    echo "* $font"
+                else
+                    echo "$font"
+                fi
+            done)
+            
+            selected_font=$(echo -e "$font_list" | menu_cmd "Select Font")
+            
+            if [[ -n "$selected_font" ]]; then
+                # Remove leading "* " if present
+                selected_font=$(echo "$selected_font" | sed 's/^\* //')
+                niri-font-set "$selected_font"
+            fi
+        fi
+        ;; 
+esac

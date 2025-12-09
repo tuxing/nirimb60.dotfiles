@@ -1,0 +1,16 @@
+#!/bin/bash
+DIR="$HOME/Pictures/Screenshots"
+mkdir -p "$DIR"
+FILE="$DIR/Screenshot_$(date +%Y%m%d_%H%M%S).png"
+
+if [[ "$1" == "area" ]]; then
+    slurp | grim -g - "$FILE"
+    cat "$FILE" | wl-copy
+elif [[ "$1" == "full" ]]; then
+    grim "$FILE"
+    cat "$FILE" | wl-copy
+else
+     slurp | grim -g - "$FILE"
+     cat "$FILE" | wl-copy
+fi
+notify-send "Screenshot saved" "$FILE"

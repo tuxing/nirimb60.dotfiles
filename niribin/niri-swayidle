@@ -1,0 +1,29 @@
+#!/bin/bash
+
+# --- Absolute Paths ---
+SCREENSAVER_SCRIPT="/home/zen/niribin/niri-launch-screensaver"
+LOCK_SCRIPT="/home/zen/niribin/niri-lock-screen"
+KILL_SCRIPT="/home/zen/niribin/niri-kill-ss"
+
+# Binaries
+SWAYIDLE_CMD="/usr/bin/swayidle"
+PKILL_CMD="/usr/bin/pkill"
+NIRI_CMD="/usr/bin/niri"
+BRIGHTNESS_CMD="/usr/bin/brightnessctl"
+
+# 1. Cleanup old swayidle instances
+$PKILL_CMD -x swayidle
+
+# 2. Run Swayidle (Production Settings)
+# 150s (2.5m): Launch Screensaver (Only if NOT locked)
+# 240s (4.0m): Kill SS -> Lock Screen
+# 260s (4.3m): Kill SS -> Power off monitors
+# Resume:      Kill SS -> Power on monitors -> Restore brightness
+# Before Sleep: Lock Screen
+
+$SWAYIDLE_CMD -w \
+    timeout 150 "pgrep -x hyprlock >/dev/null || $SCREENSAVER_SCRIPT" \
+    timeout 280 "$LOCK_SCRIPT" \
+    timeout 300 "$KILL_SCRIPT ; $NIRI_CMD msg action power-off-monitors" \
+    resume "$KILL_SCRIPT ; sleep 0.5 ; $NIRI_CMD msg action power-on-monitors ; $BRIGHTNESS_CMD -r" \
+    before-sleep "$LOCK_SCRIPT"

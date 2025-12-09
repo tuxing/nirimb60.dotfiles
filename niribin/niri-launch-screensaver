@@ -1,0 +1,34 @@
+#!/bin/bash
+
+CMD_SCRIPT="/home/zen/niribin/niri-cmd-screensaver"
+LOG_FILE="/tmp/screensaver_debug.log"
+KILL_SCRIPT="/home/zen/niribin/niri-kill-ss"
+
+# Clear log
+echo "--- Launch Attempt: $(date) ---" > "$LOG_FILE"
+
+# 1. Safe Cleanup
+# We use the external kill script because it now has the smart PID logic
+if [[ -x "$KILL_SCRIPT" ]]; then
+    $KILL_SCRIPT
+fi
+
+# 2. Configure Command (ALACRITTY)
+CMD="alacritty --class screensaver --title screensaver \
+  -o font.size=18 \
+  -o window.padding.x=0 \
+  -o window.padding.y=0 \
+  -o window.decorations=none \
+  -o colors.primary.background='#000000' \
+  -o colors.cursor.cursor='#000000' \
+  -o colors.cursor.text='#000000' \
+  -e bash -c $CMD_SCRIPT"
+
+# 3. Launch on all monitors
+MONITORS=$(niri msg -j outputs | jq -r 'to_entries[] | select(.value.logical != null) | .key')
+
+for m in $MONITORS; do
+  niri msg action focus-monitor "$m"
+  nohup $CMD >> "$LOG_FILE" 2>&1 < /dev/null &
+  sleep 0.2
+done

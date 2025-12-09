@@ -1,0 +1,59 @@
+#!/bin/bash
+
+# --- Config ---
+TEXT_FILE="$HOME/.config/screensaver.txt"
+FALLBACK_TEXT="ARCH LINUX"
+PID_FILE="/tmp/niri-ss.pid"
+
+# --- 1. SAVE PID (The Fix) ---
+# We write our own process ID to a file so the killer knows EXACTLY who to shoot.
+echo $$ > "$PID_FILE"
+
+# --- Build Args ---
+TTE_ARGS=()
+if [[ -f "$TEXT_FILE" ]]; then
+    TTE_ARGS+=("-i" "$TEXT_FILE")
+else
+    TTE_ARGS+=("-t" "$FALLBACK_TEXT")
+fi
+
+# --- Trap Signals ---
+cleanup_and_exit() {
+  tput cnorm
+  pkill -P $$ 2>/dev/null
+  rm -f "$PID_FILE" # Clean up the PID file on exit
+  exit 0
+}
+trap cleanup_and_exit SIGINT SIGTERM SIGHUP SIGQUIT
+
+# --- Start ---
+printf '\033]11;rgb:00/00/00\007' # Force Black BG
+tput civis # Hide Cursor
+read -t 0.1 -n 10000 discard
+
+# CRITICAL: Wait for Fullscreen
+sleep 0.5
+
+# --- Main Loop ---
+while true; do
+  # Run TTE
+  tte "${TTE_ARGS[@]}" \
+    --frame-rate 60 \
+    --reuse-canvas \
+    --canvas-width 0 --canvas-height 0 \
+    --anchor-canvas c --anchor-text c \
+    --random-effect --exclude-effects dev_worm \
+    --no-eol --no-restore-cursor &
+  
+  TTE_PID=$!
+
+  # Wait loop
+  while ps -p $TTE_PID > /dev/null; do
+    read -t 0.5 -n 1 input_char
+    if [[ $? -eq 0 ]]; then
+        cleanup_and_exit
+    fi
+  done
+  
+  sleep 0.5
+done
