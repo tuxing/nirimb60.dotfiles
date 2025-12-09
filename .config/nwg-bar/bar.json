@@ -1,0 +1,22 @@
+[
+  {
+    "label": "",
+    "exec": "hyprlock",
+    "icon": "/home/zen/Pictures/nwg-bar/images/system-lock-screen.svg"
+  },
+  {
+    "label": "",
+    "exec": "niri msg action quit --skip-confirmation",
+    "icon": "/home/zen/Pictures/nwg-bar/images/system-log-out.svg"
+  },
+  {
+    "label": "",
+    "exec": "systemctl reboot",
+    "icon": "/home/zen/Pictures//nwg-bar/images/system-reboot.svg"
+  },
+  {
+    "label": "",
+    "exec": "systemctl -i poweroff",
+    "icon": "/home/zen/Pictures/nwg-bar/images/system-shutdown.svg"
+  }
+]

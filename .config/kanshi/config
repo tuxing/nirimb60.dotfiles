@@ -1,0 +1,7 @@
+profile laptop {
+	output eDP-1 enable mode 2880x1800@120 scale 1.75 position 0,0
+}
+profile desk {
+	output eDP-1 disable
+        output DP-2 enable mode 3840x2160@120 scale 2.0 position 0,0 adaptive_sync on
+}
