@@ -1,0 +1,130 @@
+/*@import "../current-theme/waybar.css";*/
+
+/* 1. Target the main Waybar window for the base transparency */
+window#waybar {
+    background-color: rgba(0, 0, 0, 0.5); /* Alpha of 0.2 */
+    /* border-radius: 0; Optional: if you want the bar itself to have round corners */
+}
+
+/* 2. Reset all child elements to be transparent */
+* {
+  background-color: transparent; /* Make elements invisible so only window bg shows */
+  color: #ffffff;
+  border: 0;
+  border-radius: 0;
+  min-height: 0;
+  font-family: 'Liberation Mono';
+  font-size: 12px;
+  padding: 1px; 
+  margin: 0; 
+}
+
+/* Change horizontal margins to vertical */
+.modules-top {
+  margin-top: 8px;
+}
+
+.modules-bottom {
+  margin-bottom: 8px;
+}
+
+#workspaces button {
+  all: initial; /* Resets styles */
+  background-color: transparent; /* Ensure button bg is transparent */
+  color: #ffffff; /* Re-apply color because 'all: initial' removes it */
+  font-family: 'Liberation Mono'; /* Re-apply font */
+  padding: 4px 0; 
+  margin: 1.5px 0; 
+  min-height: 6px; 
+}
+
+/* Optional: Add a faint hover effect so you know which workspace you are selecting */
+#workspaces button:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+#workspaces button.focused {
+    color: #ffffff;
+    /* background-color: rgba(255, 255, 255, 0.1); Optional: Highlight focused workspace */
+}
+
+#workspaces button.empty {
+  opacity: 0.5;
+}
+
+/* Group for icon-only modules */
+#cpu,
+#pulseaudio,
+#backlight,
+#custom-omarchy
+#power-profiles-daemon,
+#custom-update {
+  min-height: 8px; 
+  margin: 4px 0; 
+}
+
+/* Group for text modules that need rotation */
+#clock,
+#memory,
+#custom-power_usage,
+#custom-cpu_temp,
+#battery {
+  margin: 6px 0; 
+}
+
+#idle_inhibitor {
+  min-height: 32px; 
+  margin: 7.5px 0; 
+}
+
+#tray {
+  margin-bottom: 8px; 
+}
+
+#bluetooth {
+  margin-top: 4px; 
+  margin-bottom: 8px; 
+}
+
+#network {
+  margin-bottom: 4px; 
+}
+
+#custom-expand-icon {
+  margin-bottom: 20px; 
+}
+
+/* Tooltips need a background to be readable */
+tooltip {
+  background-color: rgba(0, 0, 0, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 2px;
+}
+
+#custom-update {
+  font-size: 10px;
+}
+
+#taskbar button {
+    padding: 8px 0px 8px 0px;
+    background-color: transparent;
+}
+
+/* Visual feedback for taskbar hover */
+#taskbar button:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.hidden {
+  opacity: 0;
+}
+
+#custom-screenrecording-indicator {
+  min-height: 12px; 
+  margin-top: 8.75px; 
+  font-size: 10px;
+}
+
+#custom-screenrecording-indicator.active {
+  color: #a55555;
+}

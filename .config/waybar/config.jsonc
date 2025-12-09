@@ -1,0 +1,233 @@
+{
+  "reload_style_on_change": true,
+  "layer": "bottom",
+  "position": "right",
+  "spacing": 0,
+  "width": 24,
+  "margin": 4,
+  "height": 1024,
+  "modules-left": [
+    //"custom/omarchy",
+    //"custom/powermenu",
+    "custom/nirimenu",
+    "niri/workspaces",
+    "wlr/taskbar"
+  ],
+  "modules-center": [
+    "clock",
+    "custom/screenrecording-indicator"
+   //"custom/update"
+   ],
+  "modules-right": [
+    //"idle_inhibitor",
+    //"group/tray-expander",
+    "memory",
+    "custom/power_usage",
+    "custom/cpu_temp",
+    "power-profiles-daemon",
+    "tray",
+    "bluetooth",
+    "network",
+    "pulseaudio",
+    "cpu",
+    "backlight",
+    "battery"
+  ],
+  "niri/workspaces": {
+    "on-click": "activate",
+    "format": "{icon}",
+    "format-icons": {
+      "default": "",
+      "1": "1",
+      "2": "2",
+      "3": "3",
+      "4": "4",
+      "5": "5",
+      "6": "6",
+      "7": "7",
+      "8": "8",
+      "9": "9",
+      "active": "󱓻"
+    },
+    "orientation": "vertical"
+  },
+  "wlr/taskbar": {
+    "icon-size": 12,
+    "on-click": "activate",
+    "tooltip-format": "{title} | {app_id}",
+    "on-click-right": "minimize",
+    "format": "{icon}",
+    "orientation": "vertical"
+  },
+  "custom/omarchy": {
+    "format": "<span font='omarchy'>\ue900</span>",
+    "on-click": "/home/zen/.local/share/omarchy/bin/omarchy-menu",
+    "on-click-right": "/home/zen/.local/share/omarchy/bin/omarchy-launch-terminal",
+    "tooltip-format": "Omarchy Menu\n\nSuper + Alt + Space"
+  },
+  "custom/nirimenu": {
+    "format": "󰮫",
+    "on-click": "/home/zen/niribin/niri-menu",
+    //"on-click-right": "/home/zen/.local/share/omarchy/bin/omarchy-launch-terminal",
+    "tooltip-format": "Niri Menu\n\nSuper + Alt + Space"
+  },
+  "custom/update": {
+    "format": "",
+    "spawn": "/home/zen/.local/share/omarchy/bin/omarchy-update-available",
+    "on-click": "/home/zen/.local/share/omarchy/bin/omarchy-launch-floating-terminal-with-presentation omarchy-update",
+    "tooltip-format": "Omarchy update available",
+    "signal": 7,
+    "interval": 3600
+  },
+  "cpu": {
+    "interval": 5,
+    "format": "󰍛",
+    "on-click": "ghostty -e btop"
+  },
+  "clock": {
+    "format": "{:L%H:%M}",
+    "format-alt": "{:L%d %B W%V %Y}",
+    "tooltip": false,
+    // "timezone": "Asia/Kolkata",  // <--- Add your specific timezone here
+    //"on-click-right": "/home/zen/.local/share/omarchy/bin/omarchy-launch-floating-terminal-with-presentation omarchy-tz-select",
+    "rotate": 90
+  },
+  "network": {
+    "format-icons": ["󰤯", "󰤟", "󰤢", "󰤥", "󰤨"],
+    "format": "{icon}",
+    "format-wifi": "{icon}",
+    "format-ethernet": "󰀂",
+    "format-disconnected": "󰤮",
+    "tooltip-format-wifi": "{essid} ({signalStrength}) ⇣{bandwidthDownBytes}  ⇡{bandwidthUpBytes}",
+    "tooltip-format-ethernet": "⇣{bandwidthDownBytes}  ⇡{bandwidthUpBytes}",
+    "tooltip-format-disconnected": "Disconnected",
+    "interval": 3,
+    "spacing": 1,
+    "on-click": "ghostty --title=impala -e impala"
+  },
+  "power-profiles-daemon": {
+      "format": "{icon}",
+      "tooltip-format": "Power profile: {profile}\nDriver: {driver}",
+      "tooltip": true,
+      "format-icons": {
+        "default": "",
+        "performance": "",
+        "balanced": "⭘",
+        "power-saver": ""
+      }
+    },
+  "battery": {
+    "format": "{icon}",
+    "format-alt": "{time} {capacity} {icon}",
+    //"format": "{capacity}% {icon}",
+    //"format-discharging": "{icon}",
+    //"format-charging": "{icon}",
+    "format-plugged": "",
+    "format-icons": {
+      "charging": ["󰢜", "󰂆", "󰂇", "󰂈", "󰢝", "󰂉", "󰢞", "󰂊", "󰂋", "󰂅"],
+      "default": ["󰁺", "󰁻", "󰁼", "󰁽", "󰁾", "󰁿", "󰂀", "󰂁", "󰂂", "󰁹"]
+    },
+    "format-full": "󰂅",
+    "tooltip-format-discharging": "{power:>1.0f}W↓ {capacity}%",
+    "tooltip-format-charging": "{power:>1.0f}W↑ {capacity}%",
+    "interval": 5,
+    //"on-click": "/home/zen/.local/share/omarchy/bin/omarchy-menu power",
+    "states": {
+      "warning": 20,
+      "critical": 10
+    },
+    "rotate": 90
+  },
+  "bluetooth": {
+    "format": "",
+    "format-disabled": "󰂲",
+    "format-connected": "󰂱",
+    "tooltip-format": "Devices connected: {num_connections}",
+    "on-click": "ghostty --title=bluetui-wb -e bluetui"
+  },
+  "pulseaudio": {
+    //"format": "{volume}% {icon}",
+    "format": "{icon}",
+    "on-click": "ghostty --title=Wiremix -e wiremix",
+    "on-click-right": "pamixer -t",
+    "tooltip-format": "Playing at {volume}%",
+    "scroll-step": 5,
+    "format-muted": "",
+    "format-icons": {
+      "default": ["", "", ""]
+    }
+  },
+  //"group/tray-expander": {
+  //  "orientation": "inherit",
+  //  "drawer": {
+  //    "transition-duration": 600,
+  //    "children-class": "tray-group-item"
+  //  },
+  //  "modules": ["custom/expand-icon", "tra"]
+  //},
+  "custom/expand-icon": {
+    "format": "",
+    "tooltip": false
+  },
+  "custom/powermenu": {
+        "format": "󰐥",
+        "tooltip-format": "power menu",
+        "on-click": "nwg-bar -i 96",  // show power menu
+        "on-double-click": "systemctl reboot"
+    },
+  "backlight": {
+        // "device": "acpi_video1",
+        //"format": "{percent}{icon}",
+        "format": "{icon}",
+        //"format-icons": ["🔅", "🔆"]
+        "tooltip-format": "Brightness at {percent}%",
+        //"format-icons": ["🌑", "🌘", "🌗", "🌖", "🌕"]
+        "format-icons": ["", "", "", "", ""],
+        "on-click": "blanket"
+    },
+  "idle_inhibitor": {
+        "format": "{icon}",
+        "format-icons": {
+            "activated": "",
+            "deactivated": ""
+        }
+    },
+  "custom/power_usage": {
+    "exec": "~/.config/waybar/scripts/power_monitor.sh",
+    "return-type": "text",
+    "tail": true,
+    "on-click": "",
+    "on-double-click": "niri msg action quit --skip-confirmation",
+    "rotate": 90,
+    "tooltip": false
+  },
+  "custom/cpu_temp": {
+    "exec": "cat /tmp/waybar_temps",
+    "interval": 2,
+    "on-click": "/home/zen/.local/share/omarchy/bin/omarchy-menu system",
+    "rotate": 90,
+    "tooltip": false
+  },
+  "memory": {
+        "format": "{percentage}%",
+        "tooltip-format": "{used:0.1f}G used / {total:0.1f}G total",
+        "format-alt": "{used:0.1f}G/{total:0.1f}G",
+        "tooltip-format-alt": "{used:0.1f}G used / {total:0.1f}G total ({percentage}%)",
+        "rotate": 90
+  },
+  "custom/screenrecording-indicator": {
+    "format": "{icon}",
+    "return-type": "json",
+    "format-icons": {
+        "recording": "󰑋"
+    },
+    "exec": "/home/zen/niribin/niri-screenrecording-status",
+    "on-click": "/home/zen/niribin/niri-cmd-screenrecord --stop-recording",
+    "signal": 8
+  },
+  "tray": {
+    //"icon-size": 12,
+    "spacing": 12,
+    "orientation": "vertical"
+  }
+}

@@ -1,0 +1,120 @@
+@import "../omarchy/current/theme/waybar.css";
+
+* {
+  background-color: @background;
+  color: @foreground;
+  border: 0;
+  border-radius: 0;
+  min-height: 0;
+  font-family: 'Liberation Mono';
+  font-size: 12px;
+  padding: 1px; /* Reset all padding */
+  margin: 0; /* Reset all margin */
+}
+
+/* orientation: vertical; was here, but it's not valid CSS and has been removed. */
+/* The bar's orientation is controlled by "position": "left" in config-niri.jsonc */
+
+/* Change horizontal margins to vertical */
+.modules-top {
+  margin-top: 8px;
+}
+
+.modules-bottom {
+  margin-bottom: 8px;
+}
+
+#workspaces button {
+  all: initial;
+  padding: 4px 0; /* Was 0 6px */
+  margin: 1.5px 0; /* Was 0 1.5px */
+  min-height: 6px; /* Was min-width */
+}
+
+#workspaces button.empty {
+  opacity: 0.5;
+}
+
+/* Group for icon-only modules */
+#cpu,
+#pulseaudio,
+#backlight,
+#custom-omarchy,
+#custom-update {
+  min-height: 8px; /* Was min-width */
+  margin: 4px 0; /* Was 0 6px */
+  /* padding: 0 3px; <-- Removed */
+}
+
+/* Group for text modules that need rotation */
+#clock,
+#memory,
+#custom-power_usage,
+#custom-cpu_temp,
+#battery {
+  margin: 6px 0; /* Adjust vertical margin for rotated elements */
+}
+
+#idle_inhibitor {
+  min-height: 32px; /* Was min-width */
+  margin: 7.5px 0; /* Was 0 7.5px */
+}
+
+#tray {
+  margin-bottom: 8px; /* Was margin-right */
+  /* margin-left: 2px; <-- Removed */
+  /* margin-right: 2px; <-- Removed */
+}
+
+#bluetooth {
+  margin-top: 4px; /* Was margin-left */
+  margin-bottom: 8px; /* Was margin-right */
+  /* padding: 0 3px; <-- Removed */
+}
+
+#network {
+  margin-bottom: 4px; /* Was margin-right */
+  /* padding: 0 3px; <-- Removed */
+}
+
+#custom-expand-icon {
+  margin-bottom: 20px; /* Was margin-right */
+}
+
+tooltip {
+  padding: 2px;
+}
+
+#custom-update {
+  font-size: 10px;
+}
+
+#taskbar button {
+    /* Use shorthand padding: top right bottom left */
+    /* Adds 10px spacing above and below each icon */
+    padding: 8px 0px 8px 0px;
+
+    /* Example: adjust icon size if necessary */
+    /* font-size: 24px; */
+}
+
+/* Clock margin removed, handled by rotation group */
+/*
+#clock {
+  margin-left: 8.75px;
+}
+*/
+
+.hidden {
+  opacity: 0;
+}
+
+#custom-screenrecording-indicator {
+  min-height: 12px; /* Was min-width */
+  margin-top: 8.75px; /* Was margin-left */
+  font-size: 10px;
+}
+
+#custom-screenrecording-indicator.active {
+  color: #a55555;
+}
