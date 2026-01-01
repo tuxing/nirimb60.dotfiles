@@ -310,12 +310,13 @@ spawn-at-startup "nautilus"
 spawn-at-startup "zen-browser"
 spawn-at-startup "swayosd-server"
 spawn-sh-at-startup "/bin/sleep 2 && /home/zen/niribin/niri-swayidle &> /tmp/niri-swayidle-log.txt"
-spawn-sh-at-startup "ghostty --title=BTop -e btop"
+spawn-sh-at-startup "alacritty --title=BTop -e btop"
 //spawn-sh-at-startup "hypridle -c .config/hypr/hypridle-niri.conf"
 //spawn-sh-at-startup "/bin/sleep 0.5 && /home/zen/niribin/niri-swayidle"
 spawn-sh-at-startup "/bin/sleep 0.5 && /usr/bin/niri msg action focus-workspace 0 &> /tmp/niri-focus-log.txt"
 spawn-sh-at-startup "/usr/bin/kanshi"
 //spawn-sh-at-startup "dbus-update-activation-environment --systemd --all"
+spawn-sh-at-startup "/usr/bin/gammastep -O 7500k"
 
 // To run a shell command (with variables, pipes, etc.), use spawn-sh-at-startup:
 
